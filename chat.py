@@ -162,22 +162,22 @@ if sales_file and pm_file and inventory_file and returns_file:
         
         with tab1:
             st.header("Sales Report")
-            st.dataframe(SalesReport, use_container_width=True, height=450)
+            st.dataframe(SalesReport, width="stretch", height=450)
             st.download_button("📥 Download Sales Report", to_excel(SalesReport), "sales_report.xlsx")
         
         with tab2:
             st.header("Inventory Report")
-            st.dataframe(inventory_pivot, use_container_width=True, height=450)
+            st.dataframe(inventory_pivot, width="stretch", height=450)
             st.download_button("📥 Download Inventory Report", to_excel(inventory_pivot), "inventory.xlsx")
         
         with tab3:
             st.header("Returns Pivot")
-            st.dataframe(returns_pivot, use_container_width=True, height=450)
+            st.dataframe(returns_pivot, width="stretch", height=450)
             st.download_button("📥 Download Returns Pivot", to_excel(returns_pivot), "returns_pivot.xlsx")
         
         with tab4:
             st.header("Sales vs Inventory vs Returns Final Output")
-            st.dataframe(salesvsinventory, use_container_width=True, height=450)
+            st.dataframe(salesvsinventory, width="stretch", height=450)
             st.download_button("📥 Download Sales vs Inventory vs Returns", to_excel(salesvsinventory), "sales_vs_inventory_vs_returns.xlsx")
             
     except Exception as e:
