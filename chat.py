@@ -24,7 +24,7 @@ def to_excel(df):
         df.to_excel(writer, index=False, sheet_name='Sheet1')
     return output.getvalue()
 
-def load_file(file, header=0, sheet_name=None):
+def load_file(file, header=None, sheet_name=None):
     if file.name.endswith('.csv'):
         return pd.read_csv(file, header=header)
     else:
@@ -192,4 +192,5 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
