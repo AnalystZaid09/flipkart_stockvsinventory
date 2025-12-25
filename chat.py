@@ -12,10 +12,10 @@ st.title("📊 Sales vs Inventory vs Returns Analysis ")
 
 # Sidebar for file uploads
 st.sidebar.header("Upload Files")
-sales_file = st.sidebar.file_uploader("Upload Sales Report (Excel)", type=['xlsx', 'xls'])
-pm_file = st.sidebar.file_uploader("Upload Product Master (Excel)", type=['xlsx', 'xls'])
-inventory_file = st.sidebar.file_uploader("Upload Inventory Report (Excel/XLS)", type=['xlsx', 'xls'])
-returns_file = st.sidebar.file_uploader("Upload Returns Report (Excel)", type=['xlsx', 'xls'])
+sales_file = st.sidebar.file_uploader("Upload Sales Report File", type=['xlsx', 'xls','csv'])
+pm_file = st.sidebar.file_uploader("Upload Product Master File", type=['xlsx', 'xls','csv'])
+inventory_file = st.sidebar.file_uploader("Upload Inventory Report (Excel/XLS/CSV)", type=['xlsx','xls','csv'])
+returns_file = st.sidebar.file_uploader("Upload Returns Report (Excel/CSV)", type=['xlsx', 'xls','csv'])
 
 # Function to convert DataFrame to Excel for download
 def to_excel(df):
@@ -28,10 +28,15 @@ if sales_file and pm_file and inventory_file and returns_file:
     try:
         # Load data
         with st.spinner("Loading data..."):
-            SalesReport = pd.read_excel(sales_file)
-            PM = pd.read_excel(pm_file)
-            inventory = pd.read_excel(inventory_file, header=1)
-            Return = pd.read_excel(returns_file, sheet_name='Sheet1')
+            def load_file(file, header=None, sheet="Sheet1"):
+                if file.name.endswith(".csv"):
+                    return pd.read_csv(file)
+                else:
+                    return pd.read_excel(file, header=header, sheet_name=sheet)
+            SalesReport = load_file(sales_file)
+            PM = load_file(pm_file)
+            inventory = load_file(inventory_file, header=1)
+            Return = load_file(returns_file, sheet_name='Sheet1')
         
         st.success("✅ All files loaded successfully!")
         
@@ -186,3 +191,4 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
