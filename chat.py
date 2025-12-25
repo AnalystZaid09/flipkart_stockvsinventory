@@ -26,17 +26,29 @@ def to_excel(df):
 
 if sales_file and pm_file and inventory_file and returns_file:
     try:
-        # Load data
-        with st.spinner("Loading data..."):
-            def load_file(file, header=None, sheet="Sheet1"):
-                if file.name.endswith(".csv"):
-                    return pd.read_csv(file)
+        def load_file(file, header=None, sheet=None):
+            if file.name.lower().endswith(".csv"):
+                return pd.read_csv(file, header=header)
+            else:
+                # Load first sheet if no sheet provided
+                if sheet is None:
+                    return pd.read_excel(file, header=header)
                 else:
                     return pd.read_excel(file, header=header, sheet_name=sheet)
+        
+        # Load data safely
+        with st.spinner("Loading data..."):
             SalesReport = load_file(sales_file)
             PM = load_file(pm_file)
-            inventory = load_file(inventory_file, header=1)
-            Return = load_file(returns_file, sheet_name='Sheet1')
+            
+            # Inventory may be CSV or Excel (header row should not be skipped for CSV)
+            if inventory_file.name.lower().endswith(".csv"):
+                inventory = load_file(inventory_file)
+            else:
+                inventory = load_file(inventory_file, header=1)
+        
+            # Returns file load
+            Return = load_file(returns_file)
         
         st.success("✅ All files loaded successfully!")
         
@@ -191,4 +203,5 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
