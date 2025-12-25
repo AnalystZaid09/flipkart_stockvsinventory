@@ -30,26 +30,26 @@ if sales_file and pm_file and inventory_file and returns_file:
             if file.name.lower().endswith(".csv"):
                 return pd.read_csv(file, header=header)
             else:
-                # Load first sheet if no sheet provided
-                if sheet is None:
-                    return pd.read_excel(file, header=header)
-                else:
-                    return pd.read_excel(file, header=header, sheet_name=sheet)
+                # NEVER force Sheet1, load first sheet by default
+                return pd.read_excel(file, header=header)
         
         # Load data safely
         with st.spinner("Loading data..."):
             SalesReport = load_file(sales_file)
             PM = load_file(pm_file)
-            
-            # Inventory may be CSV or Excel (header row should not be skipped for CSV)
+        
+            # Inventory header skip ONLY for Excel, not CSV
             if inventory_file.name.lower().endswith(".csv"):
-                inventory = load_file(inventory_file)
+                inventory = pd.read_csv(inventory_file)
             else:
-                inventory = load_file(inventory_file, header=1)
+                inventory = pd.read_excel(inventory_file, header=1)
         
-            # Returns file load
-            Return = load_file(returns_file)
-        
+            # Returns load safely (first sheet for Excel)
+            if returns_file.name.lower().endswith(".csv"):
+                Return = pd.read_csv(returns_file)
+            else:
+                Return = pd.read_excel(returns_file)
+                
         st.success("✅ All files loaded successfully!")
         
         # Data Processing
@@ -203,5 +203,6 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
 
