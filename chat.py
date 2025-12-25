@@ -12,10 +12,10 @@ st.title("📊 Sales vs Inventory vs Returns Analysis ")
 
 # Sidebar for file uploads
 st.sidebar.header("Upload Files")
-sales_file = st.sidebar.file_uploader("Upload Sales Report File", type=['xlsx', 'xls','csv'])
-pm_file = st.sidebar.file_uploader("Upload Product Master File", type=['xlsx', 'xls','csv'])
-inventory_file = st.sidebar.file_uploader("Upload Inventory Report (Excel/XLS/CSV)", type=['xlsx','xls','csv'])
-returns_file = st.sidebar.file_uploader("Upload Returns Report (Excel/CSV)", type=['xlsx', 'xls','csv'])
+sales_file = st.sidebar.file_uploader("Upload Sales Report (Excel)", type=['xlsx', 'xls'])
+pm_file = st.sidebar.file_uploader("Upload Product Master (Excel)", type=['xlsx', 'xls'])
+inventory_file = st.sidebar.file_uploader("Upload Inventory Report (Excel/XLS)", type=['xlsx', 'xls'])
+returns_file = st.sidebar.file_uploader("Upload Returns Report (Excel)", type=['xlsx', 'xls'])
 
 # Function to convert DataFrame to Excel for download
 def to_excel(df):
@@ -26,30 +26,13 @@ def to_excel(df):
 
 if sales_file and pm_file and inventory_file and returns_file:
     try:
-        def load_file(file, header=None, sheet=None):
-            if file.name.lower().endswith(".csv"):
-                return pd.read_csv(file, header=header)
-            else:
-                # NEVER force Sheet1, load first sheet by default
-                return pd.read_excel(file, header=header)
-        
-        # Load data safely
+        # Load data
         with st.spinner("Loading data..."):
-            SalesReport = load_file(sales_file)
-            PM = load_file(pm_file)
+            SalesReport = pd.read_excel(sales_file)
+            PM = pd.read_excel(pm_file)
+            inventory = pd.read_excel(inventory_file, header=1)
+            Return = pd.read_excel(returns_file, sheet_name='Sheet1')
         
-            # Inventory header skip ONLY for Excel, not CSV
-            if inventory_file.name.lower().endswith(".csv"):
-                inventory = pd.read_csv(inventory_file)
-            else:
-                inventory = pd.read_excel(inventory_file, header=1)
-        
-            # Returns load safely (first sheet for Excel)
-            if returns_file.name.lower().endswith(".csv"):
-                Return = pd.read_csv(returns_file)
-            else:
-                Return = pd.read_excel(returns_file)
-                
         st.success("✅ All files loaded successfully!")
         
         # Data Processing
@@ -203,6 +186,3 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
-
-
-
