@@ -58,7 +58,18 @@ if sales_file and pm_file and inventory_file and returns_file:
         # Data Processing
         with st.spinner("Processing data..."):
             # Clean Sales Report
-            SalesReport['Final Sale Units'] = SalesReport['Final Sale Units'].apply(lambda x: 0 if x < 0 else x)
+            # Column auto-detect aur rename (Excel/CSV dono me safe chalane ke liye)
+            for col in SalesReport.columns:
+                if col.strip().lower() == "final sale units":
+                    SalesReport.rename(columns={col: "Final Sale Units"}, inplace=True)
+                    break
+            
+            # Ab clean karo negative values ko, agar column mil gaya ho
+            if "Final Sale Units" in SalesReport.columns:
+                SalesReport["Final Sale Units"] = SalesReport["Final Sale Units"].apply(lambda x: 0 if x < 0 else x)
+            else:
+                st.error("❌ 'Final Sale Units' column sales file me nahi mila — please correct file upload kare.")
+                st.stop()
             
             if "Brand" in SalesReport.columns:
                 SalesReport.rename(columns={"Brand": "Brand1"}, inplace=True)
@@ -206,6 +217,7 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
 
 
