@@ -38,11 +38,19 @@ def to_excel(df):
         df.to_excel(writer, index=False, sheet_name='Sheet1')
     return output.getvalue()
 
-def load_file(file, header=None, sheet_name=None):
+def load_file(file, header=0, sheet_name=None):
     if file.name.endswith('.csv'):
         return pd.read_csv(file, header=header)
-    else:
-        return pd.read_excel(file, header=header, sheet_name=sheet_name)
+
+    # Excel case me hamesha DataFrame return ho
+    df = pd.read_excel(file, header=header, sheet_name=sheet_name)
+
+    # Agar dict mil jaye (multiple sheets wali file), to selected sheet ka DataFrame le lo
+    if isinstance(df, dict):
+        first_key = list(df.keys())[0]
+        df = df[first_key]
+
+    return df
 
 if sales_file and pm_file and inventory_file and returns_file:
     try:
@@ -217,6 +225,7 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
 
 
