@@ -17,6 +17,14 @@ pm_file = st.sidebar.file_uploader("Upload Product Master (Excel/CSV)", type=['x
 inventory_file = st.sidebar.file_uploader("Upload Inventory Report (Excel/XLS/CSV)", type=['xlsx', 'xls','csv'])
 returns_file = st.sidebar.file_uploader("Upload Returns Report (Excel/CSV)", type=['xlsx', 'xls','csv'])
 
+header_row = st.sidebar.number_input("Select Header Row for Inventory File", min_value=0, value=1, step=1)
+
+if returns_file:
+    return_xls = pd.ExcelFile(returns_file)
+    sheet_selected = st.sidebar.selectbox("Select Sheet for Returns File", return_xls.sheet_names)
+else:
+    sheet_selected = None
+
 # Function to convert DataFrame to Excel for download
 def to_excel(df):
     output = BytesIO()
@@ -36,9 +44,9 @@ if sales_file and pm_file and inventory_file and returns_file:
         with st.spinner("Loading data..."):
             SalesReport = load_file(sales_file)
             PM = load_file(pm_file)
-            inventory = load_file(inventory_file, header=1)
-            Return = load_file(returns_file, sheet_name='Sheet1')
-        
+            inventory = load_file(inventory_file, header=header_row, sheet_name=None)
+            Return = load_file(returns_file, header=0, sheet_name=sheet_selected)
+
         st.success("✅ All files loaded successfully!")
         
         # Data Processing
@@ -192,5 +200,6 @@ if sales_file and pm_file and inventory_file and returns_file:
 
 else:
     st.info("👈 Please upload all required files in the sidebar to begin analysis.")
+
 
 
